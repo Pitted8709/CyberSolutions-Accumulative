@@ -1,0 +1,72 @@
+---
+- name: ANSIBLE - Filebeat installation and configuration by www.claudiokuenzler.com
+  hosts: '{{ target }}'
+  roles:
+    - yaegashi.blockinfile
+
+  sudo: yes
+
+  tasks:
+
+  - name: APT - Add elastic.co key
+    apt_key: url="https://artifacts.elastic.co/GPG-KEY-elasticsearch"
+    when: ansible_distribution == "Ubuntu"
+https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-7.4.0-amd64.deb
+  - name: APT - Add elastic.co repository
+    apt_repository: repo="deb https://artifacts.elastic.co/packages/5.x/apt stable main" filename="elastic-5.x" update_cache=yes
+    when: ansible_distribution == "Ubuntu"
+
+  - name: FILEBEAT - Install Filebeat
+    apt: pkg=filebeat
+    when: ansible_distribution == "Ubuntu"
+ 
+  - name: FILEBEAT - Copy base filebeat config file
+    copy: src=/srv/ansible/setup-files/filebeat/filebeat.yml dest=/etc/filebeat/filebeat.yml
+
+  - name: FILEBEAT - Set shipper name
+    lineinfile: "dest=/etc/filebeat/filebeat.yml state=present regexp='^name:' line='name: {{ ansible_hostname }}' insertafter='# Shipper Name'"
+ 
+  - name: FILEBEAT - Configure Logstash output
+    blockinfile:
+      dest: /etc/filebeat/filebeat.yml
+      insertafter: '# Logstash output'
+      marker: "# {mark} -- Logstash output configured by Ansible"
+      block: |
+        output.logstash:
+          hosts: ["logstashreceiver.example.com:5044"]
+
+
+  - name: FILEBEAT - Check if Nginx is installed
+    command: dpkg -l nginx
+    register: nginxinstalled
+
+  - name: FILEBEAT - Configure Nginx Logging
+    blockinfile:
+      dest: /etc/filebeat/filebeat.yml
+      insertafter: 'filebeat.prospectors:'
+      marker: "# {mark} -- Nginx logging configured by Ansible"
+      block: |
+        - input_type: log
+          paths:
+            - /var/log/nginx/*.log
+          document_type: nginx-access
+    when: nginxinstalled.rc == 0
+
+  - name: FILEBEAT - Check if HAProxy is installed
+    command: dpkg -l haproxy
+    register: haproxyinstalled
+
+  - name: FILEBEAT - Configure HAProxy Logging
+    blockinfile:
+      dest: /etc/filebeat/filebeat.yml
+      insertafter: 'filebeat.prospectors:'
+      marker: "# {mark} -- HAProxy logging configured by Ansible"
+      block: |
+        - input_type: log
+          paths:
+            - /var/log/haproxy.log
+          document_type: haproxy
+    when: haproxyinstalled.rc == 0
+
+  - name: FILEBEAT - Restart filebeat
+    service: name=filebeat state=restarted
