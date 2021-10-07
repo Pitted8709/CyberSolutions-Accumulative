@@ -7,8 +7,9 @@ THE collection of my scripting, mapping, &amp; Playbooking. Linux, Windows, Mac
 The files in this repository were used to configure the network depicted below.
 
 CyberSolutions-Accumulative/Diagrams/Azure ELK-Server-NMAP.drawio.pdf
+![image](https://user-images.githubusercontent.com/85303355/136429808-b7895947-a399-49c2-b8eb-a28d172a2c3a.png)
 
-These files have been tested and used to generate a live ELK deployment on Azure. They can be used to either recreate the entire deployment pictured above. Alternatively, select portions of the ansible/playbooks/ELK-playbook.yml file may be used to install only certain pieces of it, such as Filebeat.
+These files have been tested and used to generate a live ELK deployment on Azure. They can be used to either recreate the entire deployment pictured above. Alternatively, select portions of the https://github.com/Pitted8709/CyberSolutions-Accumulative/blob/69d7836012156a06c695e9c02ae028cc33d3c3bd/ansible/playbooks/ELK-playbook.yml file may be used to install only certain pieces of it, such as Filebeat.
 
 
 This document contains the following details:
