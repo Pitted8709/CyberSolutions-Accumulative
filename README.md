@@ -105,10 +105,11 @@ These Beats allow us to collect the following information from each machine:
 In order to use the playbook, you will need to have an Ansible control node already configured. Assuming you have such a control node provisioned: 
 
 SSH into the control node and follow the steps below:
-- Copy the playbook.yml  file to /etc/ansible.
+- Copy the ELK-playbook.yml file to /etc/ansible.
 - Update the /etc/ansible/ansible.cfg file to include the private IP of your ELK VM.
-- Run the playbook, and navigate to http://(your VM Public IP)/app/kibana#/home to check that the installation worked as expected.
+- Run the playbook, ansible-playbook  ELK-playbook.yml
+- navigate to http://(your VM Public IP)/app/kibana#/home to check that the installation worked as expected.
 
 
 
-_As a **Bonus**, provide the specific commands the user will need to run to download the playbook, update the files, etc._
+
